@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anneler Günü Hediyesi</title>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(to bottom, #ffe6e6, #ffffff);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .gift-box {
+      width: 150px;
+      height: 150px;
+      background: #ff6699;
+      position: relative;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 0 auto;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: transform 0.4s;
+    }
+
+    .gift-box:hover {
+      transform: scale(1.05);
+    }
+
+    .lid {
+      width: 150px;
+      height: 30px;
+      background: #cc3366;
+      position: absolute;
+      top: -30px;
+      left: 0;
+      border-radius: 10px 10px 0 0;
+      transition: transform 1s ease;
+      transform-origin: bottom center;
+    }
+
+    .opened .lid {
+      transform: rotateX(120deg) translateY(-20px);
+    }
+
+    .ribbon {
+      width: 20px;
+      height: 150px;
+      background: #ffffff;
+      position: absolute;
+      left: 65px;
+      top: 0;
+    }
+
+    .message {
+      font-size: 1.5rem;
+      color: #b30059;
+      margin-top: 30px;
+      opacity: 0;
+      transition: opacity 1s;
+    }
+
+    .show-message {
+      opacity: 1;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confetti"></canvas>
+
+  <div class="container">
+    <div class="gift-box" onclick="openGift()">
+      <div class="lid"></div>
+      <div class="ribbon"></div>
+    </div>
+    <div class="message" id="message"> Anneler Günün Kutlu Olsun </div>
+  </div>
+
+  <script>
+    let opened = false;
+
+    function openGift() {
+      if (opened) return;
+      opened = true;
+
+      const box = document.querySelector('.gift-box');
+      const message = document.getElementById('message');
+      box.classList.add('opened');
+
+      setTimeout(() => {
+        message.classList.add('show-message');
+        startConfetti();
+      }, 1200);
+    }
+
+    // Confetti effect
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let pieces = [];
+
+    function createConfetti() {
+      for (let i = 0; i < 150; i++) {
+        pieces.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          size: Math.random() * 8 + 4,
+          speed: Math.random() * 3 + 2,
+          color: `hsl(${Math.random() * 360}, 70%, 60%)`,
+          rotation: Math.random() * 360
+        });
+      }
+    }
+
+    function drawConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let piece of pieces) {
+        ctx.save();
+        ctx.fillStyle = piece.color;
+        ctx.translate(piece.x, piece.y);
+        ctx.rotate(piece.rotation * Math.PI / 180);
+        ctx.fillRect(-piece.size/2, -piece.size/2, piece.size, piece.size);
+        ctx.restore();
+
+        piece.y += piece.speed;
+        piece.rotation += 5;
+
+        if (piece.y > canvas.height) {
+          piece.y = -10;
+          piece.x = Math.random() * canvas.width;
+        }
+      }
+      requestAnimationFrame(drawConfetti);
+    }
+
+    function startConfetti() {
+      createConfetti();
+      drawConfetti();
+    }
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+
+</body>
+</html>
